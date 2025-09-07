@@ -41,7 +41,7 @@ const AssessmentsList = () => {
   }
 
   return (
-    <div className="space-y-6 py-8">
+    <div className="space-y-6 py-10">
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Skill Assessments</h1>
         <p className="text-gray-600 mt-1">Test your skills and improve your profile</p>
