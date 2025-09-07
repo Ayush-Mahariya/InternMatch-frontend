@@ -23,6 +23,8 @@ import useAuth from '../../hooks/useAuth';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
+// Get API base URL from environment variable
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 const CompanyProfile = () => {
   const [profile, setProfile] = useState({
@@ -76,7 +78,7 @@ const CompanyProfile = () => {
   const fetchProfile = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/companies/profile', {
+      const response = await fetch(`${API_BASE_URL}/api/companies/profile`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -97,7 +99,7 @@ const CompanyProfile = () => {
     try {
       setSaving(true);
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/companies/profile', {
+      const response = await fetch(`${API_BASE_URL}/api/companies/profile`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

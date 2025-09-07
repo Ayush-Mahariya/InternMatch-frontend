@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Briefcase, TrendingUp, User, Clock, Award, Plus, Search, Eye } from 'lucide-react';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
+// Get API base URL from environment variable
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 const CompanyDashboard = () => {
   const [stats, setStats] = useState({
@@ -19,7 +21,7 @@ const CompanyDashboard = () => {
   const fetchDashboardStats = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/analytics/dashboard', {
+      const response = await fetch(`${API_BASE_URL}/api/analytics/dashboard`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (response.ok) {

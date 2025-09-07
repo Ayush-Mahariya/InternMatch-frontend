@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Award, Clock } from 'lucide-react';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
+// Get API base URL from environment variable
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 const AssessmentsList = () => {
   const [assessments, setAssessments] = useState([]);
@@ -13,7 +15,7 @@ const AssessmentsList = () => {
 
   const fetchAssessments = async () => {
     try {
-      const response = await fetch('/api/assessments');
+      const response = await fetch(`${API_BASE_URL}/api/assessments`);
       if (response.ok) {
         const data = await response.json();
         setAssessments(data);

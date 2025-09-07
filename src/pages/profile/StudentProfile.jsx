@@ -22,6 +22,8 @@ import useAuth from '../../hooks/useAuth';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
+// Get API base URL from environment variable
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 const StudentProfile = ({ currentView, setCurrentView }) => {
   const [profile, setProfile] = useState({
@@ -99,7 +101,7 @@ const StudentProfile = ({ currentView, setCurrentView }) => {
   const fetchProfile = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/students/profile', {
+      const response = await fetch(`${API_BASE_URL}/api/students/profile`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -122,7 +124,7 @@ const StudentProfile = ({ currentView, setCurrentView }) => {
     try {
       console.log("After adding project", profile);
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/students/profile', {
+      const response = await fetch(`${API_BASE_URL}/api/students/profile`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

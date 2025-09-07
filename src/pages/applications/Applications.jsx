@@ -3,6 +3,8 @@ import { Briefcase, Building2, Calendar } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
+// Get API base URL from environment variable
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 const Applications = () => {
   const [applications, setApplications] = useState([]);
@@ -16,7 +18,7 @@ const Applications = () => {
   const fetchApplications = async () => {
     try {
       const token = localStorage.getItem('token');
-      const endpoint = user?.role === 'student' ? '/api/applications/student' : '/api/applications/company';
+      const endpoint = user?.role === 'student' ? `${API_BASE_URL}/api/applications/student` : `${API_BASE_URL}/api/applications/company`;
       
       const response = await fetch(endpoint, {
         headers: { Authorization: `Bearer ${token}` }

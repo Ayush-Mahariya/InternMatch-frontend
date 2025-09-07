@@ -35,6 +35,8 @@ import {
 import useAuth from '../../hooks/useAuth';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
+// Get API base URL from environment variable
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 const StudentDashboard = ({ currentView, setCurrentView }) => {
   const [profile, setProfile] = useState(null);
@@ -64,9 +66,9 @@ const StudentDashboard = ({ currentView, setCurrentView }) => {
 
       // Fetch all data in parallel
       const [profileRes, analyticsRes, applicationsRes] = await Promise.all([
-        fetch('/api/students/profile', { headers }),
-        fetch('/api/analytics/dashboard', { headers }),
-        fetch('/api/applications/student', { headers })
+        fetch(`${API_BASE_URL}/api/students/profile`, { headers }),
+        fetch(`${API_BASE_URL}/api/analytics/dashboard`, { headers }),
+        fetch(`${API_BASE_URL}/api/applications/student`, { headers })
       ]);
 
       // Handle profile response (might be 404 if no profile exists yet)

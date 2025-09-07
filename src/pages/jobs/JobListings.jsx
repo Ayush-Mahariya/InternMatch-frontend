@@ -5,6 +5,8 @@ import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Select from '../../components/ui/Select';
+// Get API base URL from environment variable
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 const JobListings = () => {
   const [jobs, setJobs] = useState([]);
@@ -27,7 +29,7 @@ const JobListings = () => {
         if (filters[key]) queryParams.append(key, filters[key]);
       });
 
-      const response = await fetch(`/api/jobs?${queryParams}`);
+      const response = await fetch(`${API_BASE_URL}/api/jobs?${queryParams}`);
       if (response.ok) {
         const data = await response.json();
         setJobs(data.jobs);
@@ -42,7 +44,7 @@ const JobListings = () => {
   const applyToJob = async (jobId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/applications', {
+      const response = await fetch(`${API_BASE_URL}/api/applications`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
