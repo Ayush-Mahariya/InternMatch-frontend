@@ -18,14 +18,14 @@ const LandingPage = ({ onShowLogin, onShowRegister }) => {
   const companyDirectors = [
     {
       name: "Ayush Mahariya",
-      position: "Co-founder & CTO",
+      position: "Co-founder",
       image: "/images/directors/ayush_photo.jpeg",
       bio: "IIT Kharagpur Grad",
       linkedin: "https://www.linkedin.com/in/ayush-mahariya-9402bb208/"
     },
     {
       name: "Aryan Chahil",
-      position: "Co-founder & CEO", 
+      position: "Co-founder", 
       image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
       bio: "RGIPT Grad",
       linkedin: "https://www.linkedin.com/in/aryan-chahil-b382641b2/"
@@ -223,7 +223,7 @@ const LandingPage = ({ onShowLogin, onShowRegister }) => {
       {/* Partner Companies Section */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          {/* <div className="text-center mb-16">
             <h3 className="text-3xl font-bold text-gray-900 mb-4">Our Partner Companies</h3>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Leading companies trust InternMatch to find their next generation of talent. 
@@ -251,10 +251,10 @@ const LandingPage = ({ onShowLogin, onShowRegister }) => {
                 </div>
               </Card>
             ))}
-          </div>
+          </div> */}
 
           <div className="text-center">
-            <p className="text-gray-600 mb-6">Ready to join these industry leaders?</p>
+            {/* <p className="text-gray-600 mb-6">Ready to join these industry leaders?</p> */}
             <Button size="lg" onClick={onShowRegister}>
               Post Your First Job - Free
             </Button>
@@ -263,7 +263,7 @@ const LandingPage = ({ onShowLogin, onShowRegister }) => {
       </section>
 
       {/* Success Stories Section */}
-      <section className="py-20 bg-gradient-to-br from-blue-50 to-purple-50">
+      {/* <section className="py-20 bg-gradient-to-br from-blue-50 to-purple-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h3 className="text-3xl font-bold text-gray-900 mb-4">Success Stories</h3>
@@ -315,7 +315,7 @@ const LandingPage = ({ onShowLogin, onShowRegister }) => {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
@@ -419,15 +419,15 @@ const LandingPage = ({ onShowLogin, onShowRegister }) => {
               <div className="space-y-2">
                 <div className="flex items-center text-gray-400">
                   <Mail className="w-4 h-4 mr-2" />
-                  <span className="text-sm">hello@internmatch.com</span>
+                  <span className="text-sm">contact@internmatch.in</span>
                 </div>
                 <div className="flex items-center text-gray-400">
                   <Phone className="w-4 h-4 mr-2" />
-                  <span className="text-sm">+1 (555) 123-4567</span>
+                  <span className="text-sm">+91 (637) 662-7712</span>
                 </div>
                 <div className="flex items-center text-gray-400">
                   <MapPin className="w-4 h-4 mr-2" />
-                  <span className="text-sm">San Francisco, CA</span>
+                  <span className="text-sm">Jaipur, INDIA</span>
                 </div>
               </div>
             </div>
