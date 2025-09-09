@@ -3,12 +3,14 @@ import useAuth from '../../hooks/useAuth';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
 import EmailVerification from '../auth/EmailVerification';
+import ForgotPassword from '../auth/ForgotPassword';
 
 const LoginForm = ({ onSuccess }) => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [showVerification, setShowVerification] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [verificationEmail, setVerificationEmail] = useState('');
 
   const { login } = useAuth();
@@ -43,11 +45,25 @@ const LoginForm = ({ onSuccess }) => {
     onSuccess(user, token);
   };
 
+  const handleForgotPasswordSuccess = () => {
+    setShowForgotPassword(false);
+  };
+
   const handleBackToLogin = () => {
     // Go back to login form
     setShowVerification(false);
     setVerificationEmail('');
   };
+
+  // Show forgot password form
+  if (showForgotPassword) {
+    return (
+      <ForgotPassword
+        onBack={() => setShowForgotPassword(false)}
+        onSuccess={handleForgotPasswordSuccess}
+      />
+    );
+  }
 
   // Render OTP verification if needed
   if (showVerification) {
@@ -84,6 +100,16 @@ const LoginForm = ({ onSuccess }) => {
       <Button type="submit" disabled={isLoading} className="w-full">
         {isLoading ? 'Signing in...' : 'Sign In'}
       </Button>
+      
+      <div className="text-center mt-4">
+        <button
+          type="button"
+          onClick={() => setShowForgotPassword(true)}
+          className="text-blue-600 hover:text-blue-700 text-sm"
+        >
+          Forgot your password?
+        </button>
+      </div>
     </form>
   );
 };

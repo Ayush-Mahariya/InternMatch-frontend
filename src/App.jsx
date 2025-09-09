@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import useAuth from './hooks/useAuth';
 import Navigation from './components/layout/Navigation';
 import Modal from './components/ui/Modal';
 import LoginForm from './components/auth/LoginForm';
 import RegisterForm from './components/auth/RegisterForm';
+import ResetPassword from './components/auth/ResetPassword';
 import LandingPage from './pages/LandingPage';
 import StudentDashboard from './pages/dashboard/StudentDashboard';
 import CompanyDashboard from './pages/dashboard/CompanyDashboard';
@@ -48,21 +50,28 @@ const InternMatchApp = () => {
         onShowRegister={() => setShowRegisterModal(true)}
       />;
     }
+    
     switch (currentView) {
       case 'dashboard':
-        return user.role === 'student' ? <StudentDashboard currentView={currentView} setCurrentView={setCurrentView} /> : <CompanyDashboard />;
+        return user.role === 'student' 
+          ? <StudentDashboard currentView={currentView} setCurrentView={setCurrentView} /> 
+          : <CompanyDashboard />;
       case 'jobs':
         return <JobListings />;
       case 'applications':
         return <Applications />;
       case 'profile':
-        return user.role === 'student' ? <StudentProfile currentView={currentView} setCurrentView={setCurrentView} /> : <CompanyProfile />;
+        return user.role === 'student' 
+          ? <StudentProfile currentView={currentView} setCurrentView={setCurrentView} /> 
+          : <CompanyProfile />;
       case 'assessments':
         return <AssessmentsList />;
       case 'candidates':
         return <CandidateSearch />;
       default:
-        return user.role === 'student' ? <StudentDashboard currentView={currentView} setCurrentView={setCurrentView} /> : <CompanyDashboard />;
+        return user.role === 'student' 
+          ? <StudentDashboard currentView={currentView} setCurrentView={setCurrentView} /> 
+          : <CompanyDashboard />;
     }
   };
 
@@ -79,6 +88,7 @@ const InternMatchApp = () => {
         <>
           {renderCurrentView()}
           
+          {/* Login Modal */}
           <Modal
             isOpen={showLoginModal}
             onClose={() => setShowLoginModal(false)}
@@ -101,6 +111,7 @@ const InternMatchApp = () => {
             </div>
           </Modal>
 
+          {/* Register Modal */}
           <Modal
             isOpen={showRegisterModal}
             onClose={() => setShowRegisterModal(false)}
@@ -131,7 +142,15 @@ const InternMatchApp = () => {
 export default function App() {
   return (
     <AuthProvider>
-      <InternMatchApp />
+      <Router>
+        <Routes>
+          {/* Main app route */}
+          <Route path="/*" element={<InternMatchApp />} />
+          
+          {/* Password reset route - accessible without authentication */}
+          <Route path="/reset-password/:token/:userId" element={<ResetPassword />} />
+        </Routes>
+      </Router>
     </AuthProvider>
   );
 }
