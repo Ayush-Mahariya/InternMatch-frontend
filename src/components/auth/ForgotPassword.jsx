@@ -3,7 +3,7 @@ import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
 
-const ForgotPassword = ({ onBack, onSuccess }) => {
+const ForgotPassword = ({ onBack }) => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -30,7 +30,7 @@ const ForgotPassword = ({ onBack, onSuccess }) => {
       if (response.ok) {
         setIsSuccess(true);
         setMessage(data.message || 'Password reset link sent to your email');
-        if (onSuccess) onSuccess();
+        // if (onSuccess) onSuccess();
       } else {
         setError(data.message || 'Failed to send password reset email');
       }

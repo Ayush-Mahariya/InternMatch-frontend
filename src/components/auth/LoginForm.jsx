@@ -60,7 +60,6 @@ const LoginForm = ({ onSuccess }) => {
     return (
       <ForgotPassword
         onBack={() => setShowForgotPassword(false)}
-        onSuccess={handleForgotPasswordSuccess}
       />
     );
   }
@@ -100,7 +99,7 @@ const LoginForm = ({ onSuccess }) => {
       <Button type="submit" disabled={isLoading} className="w-full">
         {isLoading ? 'Signing in...' : 'Sign In'}
       </Button>
-      
+
       <div className="text-center mt-4">
         <button
           type="button"
