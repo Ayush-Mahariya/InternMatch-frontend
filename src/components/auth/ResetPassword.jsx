@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Lock, CheckCircle, AlertCircle } from 'lucide-react';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
 
 const ResetPassword = () => {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  
+  // Get token and userId from query parameters
+  const token = searchParams.get('token');
+  const userId = searchParams.get('id'); // Note: 'id' not 'userId'
+  
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -14,14 +21,15 @@ const ResetPassword = () => {
   const [tokenValid, setTokenValid] = useState(false);
   const [userEmail, setUserEmail] = useState('');
 
-  const { token, userId } = useParams();
-  const navigate = useNavigate();
-
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
-  // Verify token on component mount
   useEffect(() => {
-    verifyResetToken();
+    if (token && userId) {
+      verifyResetToken();
+    } else {
+      setError('Invalid reset link. Missing token or user ID.');
+      setVerifying(false);
+    }
   }, [token, userId]);
 
   const verifyResetToken = async () => {
@@ -47,7 +55,6 @@ const ResetPassword = () => {
     e.preventDefault();
     setError('');
 
-    // Password validation
     if (password.length < 6) {
       setError('Password must be at least 6 characters long');
       return;
@@ -76,7 +83,7 @@ const ResetPassword = () => {
       if (response.ok) {
         setSuccess(true);
         setTimeout(() => {
-          navigate('/login');
+          navigate('/');
         }, 3000);
       } else {
         setError(data.message || 'Failed to reset password. Please try again.');
@@ -89,6 +96,7 @@ const ResetPassword = () => {
     }
   };
 
+  // Rest of your component JSX remains the same...
   if (verifying) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -107,8 +115,8 @@ const ResetPassword = () => {
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Invalid Link</h2>
           <p className="text-gray-600 mb-4">{error}</p>
-          <Button onClick={() => navigate('/forgot-password')} className="w-full">
-            Request New Reset Link
+          <Button onClick={() => navigate('/')} className="w-full">
+            Go to Home
           </Button>
         </div>
       </div>
@@ -122,9 +130,9 @@ const ResetPassword = () => {
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Password Reset Successful</h2>
           <p className="text-gray-600 mb-4">
-            Your password has been successfully reset. You will be redirected to login shortly.
+            Your password has been successfully reset. You will be redirected shortly.
           </p>
-          <Button onClick={() => navigate('/login')} className="w-full">
+          <Button onClick={() => navigate('/')} className="w-full">
             Go to Login
           </Button>
         </div>
