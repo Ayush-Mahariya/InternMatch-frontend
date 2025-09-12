@@ -421,13 +421,13 @@ const LandingPage = ({ onShowLogin, onShowRegister }) => {
                   <Mail className="w-4 h-4 mr-2" />
                   <span className="text-sm">contact@internmatch.in</span>
                 </div>
-                <div className="flex items-center text-gray-400">
+                {/* <div className="flex items-center text-gray-400">
                   <Phone className="w-4 h-4 mr-2" />
                   <span className="text-sm">+91 (637) 662-7712</span>
-                </div>
+                </div> */}
                 <div className="flex items-center text-gray-400">
                   <MapPin className="w-4 h-4 mr-2" />
-                  <span className="text-sm">Jaipur, INDIA</span>
+                  <span className="text-sm">Bengaluru, INDIA</span>
                 </div>
               </div>
             </div>
