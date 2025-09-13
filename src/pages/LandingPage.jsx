@@ -2,6 +2,7 @@ import React from 'react';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import Header from '../components/layout/Header';
+import NewsletterForm from '../components/layout/NewsletterForm';
 import { 
   MapPin, 
   Mail, 
@@ -363,18 +364,18 @@ const LandingPage = ({ onShowLogin, onShowRegister }) => {
                 through innovative matching technology and comprehensive skill development.
               </p>
               <div className="flex space-x-4">
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                {/* <a href="#" className="text-gray-400 hover:text-white transition-colors">
                   <Twitter className="w-5 h-5" />
-                </a>
+                </a> */}
                 <a href="#" className="text-gray-400 hover:text-white transition-colors">
                   <Linkedin className="w-5 h-5" />
                 </a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <a href="https://www.instagram.com/internmatch.in?igsh=bTFtcmp4MWd4Zndp" className="text-gray-400 hover:text-white transition-colors">
                   <Instagram className="w-5 h-5" />
                 </a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                {/* <a href="#" className="text-gray-400 hover:text-white transition-colors">
                   <Facebook className="w-5 h-5" />
-                </a>
+                </a> */}
               </div>
             </div>
 
@@ -434,7 +435,8 @@ const LandingPage = ({ onShowLogin, onShowRegister }) => {
           </div>
 
           {/* Newsletter Subscription */}
-          <div className="border-t border-gray-800 py-8">
+          <NewsletterForm />
+          {/* <div className="border-t border-gray-800 py-8">
             <div className="max-w-md">
               <h4 className="text-white font-semibold mb-2">Stay Updated</h4>
               <p className="text-gray-400 text-sm mb-4">
@@ -451,7 +453,7 @@ const LandingPage = ({ onShowLogin, onShowRegister }) => {
                 </Button>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Bottom Footer */}
           <div className="border-t border-gray-800 py-6">
