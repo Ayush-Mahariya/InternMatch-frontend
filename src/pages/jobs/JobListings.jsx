@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Building2, MapPin, IndianRupee } from 'lucide-react';
-import useAuth from '../../hooks/useAuth';
+import { useAuth } from '../../context/AuthContext';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Select from '../../components/ui/Select';
+
 // Get API base URL from environment variable
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
@@ -16,11 +17,14 @@ const JobListings = () => {
     type: ''
   });
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+
+  const { user, token, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    fetchJobs();
-  }, [filters]);
+    if (!authLoading) {
+      fetchJobs();
+    }
+  }, [filters, authLoading]);
 
   const fetchJobs = async () => {
     try {
@@ -33,6 +37,8 @@ const JobListings = () => {
       if (response.ok) {
         const data = await response.json();
         setJobs(data.jobs);
+      } else {
+        console.error('Failed to fetch jobs:', response.statusText);
       }
     } catch (error) {
       console.error('Error fetching jobs:', error);
@@ -43,12 +49,16 @@ const JobListings = () => {
 
   const applyToJob = async (jobId) => {
     try {
-      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please sign in to apply for jobs');
+        return;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/applications`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ jobId, coverLetter: '' })
       });
@@ -57,13 +67,22 @@ const JobListings = () => {
         alert('Application submitted successfully!');
       } else {
         const error = await response.json();
-        alert(error.message);
+        alert(error.message || 'Failed to submit application');
       }
     } catch (error) {
       console.error('Error applying to job:', error);
       alert('Error submitting application');
     }
   };
+
+  // Show loading while auth is initializing
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -150,9 +169,7 @@ const JobListings = () => {
                       {job.stipend}/month
                     </div>
                   </div>
-
                   <p className="text-gray-700 mb-4 line-clamp-2">{job.description}</p>
-
                   <div className="flex flex-wrap gap-2 mb-4">
                     {job.skills?.slice(0, 5).map(skill => (
                       <span key={skill} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md">
@@ -161,7 +178,6 @@ const JobListings = () => {
                     ))}
                   </div>
                 </div>
-
                 {user?.role === 'student' && (
                   <div className="ml-4">
                     <Button onClick={() => applyToJob(job._id)}>

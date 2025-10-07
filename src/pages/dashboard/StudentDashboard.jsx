@@ -32,9 +32,10 @@ import {
   Github,
   Linkedin
 } from 'lucide-react';
-import useAuth from '../../hooks/useAuth';
+import { useAuth } from '../../context/AuthContext';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
+
 // Get API base URL from environment variable
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
@@ -44,16 +45,18 @@ const StudentDashboard = ({ currentView, setCurrentView }) => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { user, logout } = useAuth();
+
+  const { user, token, logout, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    fetchDashboardData();
-  }, []);
+    if (!authLoading && token) {
+      fetchDashboardData();
+    }
+  }, [authLoading, token]);
 
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
       
       if (!token) {
         throw new Error('No authentication token found');
@@ -119,6 +122,18 @@ const StudentDashboard = ({ currentView, setCurrentView }) => {
     }
   };
 
+  // Show loading while auth is initializing
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Initializing...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -147,68 +162,6 @@ const StudentDashboard = ({ currentView, setCurrentView }) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Enhanced Navbar */}
-      {/* <nav className="bg-white shadow-lg border-b sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16"> */}
-            {/* Logo and Welcome */}
-            {/* <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                InternMatch
-              </h1>
-              <div className="hidden md:block text-sm text-gray-500">
-                Welcome back, {user?.name}!
-              </div>
-            </div> */}
-
-            {/* Navigation Links */}
-            {/* <div className="hidden md:flex items-center space-x-6">
-              <Button variant="ghost" className="text-sm" onClick={() => setCurrentView('jobs')}>
-                <Search className="w-4 h-4 mr-2" />
-                Find Jobs
-              </Button>
-              <Button variant="ghost" className="text-sm" onClick={() => setCurrentView('applications')}>
-                <Briefcase className="w-4 h-4 mr-2" />
-                Applications
-              </Button>
-              <Button variant="ghost" className="text-sm" onClick={() => setCurrentView('assessments')}>
-                <Award className="w-4 h-4 mr-2" />
-                Assessments
-              </Button>
-              <Button variant="ghost" className="text-sm" onClick={() => setCurrentView('profile')}>
-                <User className="w-4 h-4 mr-2" />
-                Profile
-              </Button>
-            </div> */}
-
-            {/* Right Side - Profile & Logout */}
-            {/* <div className="flex items-center space-x-4"> */}
-              {/* User Profile */}
-              {/* <div className="hidden md:flex items-center space-x-3">
-                <div className="text-right">
-                  <p className="text-sm font-medium text-gray-900">{user?.name}</p>
-                  <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
-                </div>
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
-                  <User className="w-4 h-4 text-white" />
-                </div>
-              </div> */}
-
-              {/* Logout Button */}
-              {/* <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={logout}
-                className="text-red-600 hover:text-red-700 hover:bg-red-50"
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                <span className="hidden md:inline">Sign Out</span>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </nav> */}
-
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Header Section */}

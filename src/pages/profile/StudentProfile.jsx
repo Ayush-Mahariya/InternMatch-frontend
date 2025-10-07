@@ -18,10 +18,11 @@ import {
   Save,
   IndianRupee
 } from 'lucide-react';
-import useAuth from '../../hooks/useAuth';
+import { useAuth } from '../../context/AuthContext';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
+
 // Get API base URL from environment variable
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
@@ -92,17 +93,26 @@ const StudentProfile = ({ currentView, setCurrentView }) => {
   const [newLocation, setNewLocation] = useState('');
   const [newIndustry, setNewIndustry] = useState('');
 
-  const { user } = useAuth();
+  const { user, token, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    fetchProfile();
-  }, []);
+    if (!authLoading && token) {
+      fetchProfile();
+    }
+  }, [authLoading, token]);
 
   const fetchProfile = async () => {
     try {
-      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No authentication token available');
+        return;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/students/profile`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
 
       if (response.ok) {
@@ -112,6 +122,8 @@ const StudentProfile = ({ currentView, setCurrentView }) => {
         setTempPreferences(data.preferences || { jobTypes: [], locations: [], industries: [], salaryExpectation: '' });
       } else if (response.status === 404) {
         console.log('Profile not found - user can create one');
+      } else {
+        console.error('Failed to fetch profile:', response.statusText);
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -123,12 +135,17 @@ const StudentProfile = ({ currentView, setCurrentView }) => {
   const updateProfile = async () => {
     try {
       console.log("After adding project", profile);
-      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        alert('Please sign in to update your profile');
+        return;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/students/profile`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(profile)
       });
@@ -137,10 +154,13 @@ const StudentProfile = ({ currentView, setCurrentView }) => {
         setIsEditing(false);
         alert('Profile updated successfully!');
         fetchProfile();
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update profile');
       }
     } catch (error) {
       console.error('Error updating profile:', error);
-      alert('Error updating profile');
+      alert('Error updating profile: ' + error.message);
     }
   };
 
@@ -191,17 +211,13 @@ const StudentProfile = ({ currentView, setCurrentView }) => {
     };
 
     let newProjects = [...profile.projects];
-    // console.log("editingProject:", editingProject);
     if (editingProject === -1) {
       newProjects.push(projectToSave);
     } else {
       newProjects[editingProject] = projectToSave;
     }
-    // console.log("Projects after adding new: ", newProjects)
     setProfile({ ...profile, projects: newProjects });
-    // console.log("Profile after adding new: ", profile.projects);
     setEditingProject(null);
-    // updateProfile();
   };
 
   const removeProject = (index) => {
@@ -378,6 +394,15 @@ const StudentProfile = ({ currentView, setCurrentView }) => {
       industries: tempPreferences.industries.filter(i => i !== industry)
     });
   };
+
+  // Show loading while auth is initializing
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

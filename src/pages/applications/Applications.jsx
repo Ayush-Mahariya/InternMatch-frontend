@@ -1,32 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { Briefcase, Building2, Calendar } from 'lucide-react';
-import useAuth from '../../hooks/useAuth';
+import { useAuth } from '../../context/AuthContext';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
+
 // Get API base URL from environment variable
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 const Applications = () => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user, token, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    fetchApplications();
-  }, []);
+    if (!authLoading && token) {
+      fetchApplications();
+    }
+  }, [authLoading, token]);
 
   const fetchApplications = async () => {
     try {
-      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No authentication token available');
+        return;
+      }
+
       const endpoint = user?.role === 'student' ? `${API_BASE_URL}/api/applications/student` : `${API_BASE_URL}/api/applications/company`;
       
       const response = await fetch(endpoint, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
 
       if (response.ok) {
         const data = await response.json();
         setApplications(data);
+      } else {
+        console.error('Failed to fetch applications:', response.statusText);
       }
     } catch (error) {
       console.error('Error fetching applications:', error);
@@ -46,6 +58,16 @@ const Applications = () => {
     }
   };
 
+  // Show loading while auth is initializing
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-lg text-gray-600">Loading...</div>
+      </div>
+    );
+  }
+
+  // Show loading while fetching applications
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">

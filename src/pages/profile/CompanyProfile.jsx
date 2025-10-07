@@ -19,10 +19,11 @@ import {
   X,
   Loader
 } from 'lucide-react';
-import useAuth from '../../hooks/useAuth';
+import { useAuth } from '../../context/AuthContext';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
+
 // Get API base URL from environment variable
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
@@ -43,7 +44,8 @@ const CompanyProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const { user } = useAuth();
+
+  const { user, token, loading: authLoading } = useAuth();
 
   // Company size options
   const companySizeOptions = [
@@ -72,14 +74,23 @@ const CompanyProfile = () => {
   ];
 
   useEffect(() => {
-    fetchProfile();
-  }, []);
+    if (!authLoading && token) {
+      fetchProfile();
+    }
+  }, [authLoading, token]);
 
   const fetchProfile = async () => {
     try {
-      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No authentication token available');
+        return;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/companies/profile`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
 
       if (response.ok) {
@@ -87,6 +98,8 @@ const CompanyProfile = () => {
         setProfile(data);
       } else if (response.status === 404) {
         console.log('Company profile not found - user can create one');
+      } else {
+        console.error('Failed to fetch profile:', response.statusText);
       }
     } catch (error) {
       console.error('Error fetching company profile:', error);
@@ -98,12 +111,17 @@ const CompanyProfile = () => {
   const saveProfile = async () => {
     try {
       setSaving(true);
-      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        alert('Please sign in to save your profile');
+        return;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/companies/profile`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(profile)
       });
@@ -113,7 +131,8 @@ const CompanyProfile = () => {
         alert('Company profile updated successfully!');
         fetchProfile();
       } else {
-        throw new Error('Failed to save profile');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to save profile');
       }
     } catch (error) {
       console.error('Error saving profile:', error);
@@ -148,6 +167,15 @@ const CompanyProfile = () => {
         );
     }
   };
+
+  // Show loading while auth is initializing
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

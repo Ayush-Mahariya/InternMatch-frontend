@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Briefcase, TrendingUp, User, Clock, Award, Plus, Search, Eye } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
+
 // Get API base URL from environment variable
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
@@ -13,25 +15,60 @@ const CompanyDashboard = () => {
     pendingApplications: 0,
     hiredCandidates: 0
   });
+  const [loading, setLoading] = useState(true);
+
+  const { token, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    fetchDashboardStats();
-  }, []);
+    if (!authLoading && token) {
+      fetchDashboardStats();
+    }
+  }, [authLoading, token]);
 
   const fetchDashboardStats = async () => {
     try {
-      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No authentication token available');
+        return;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/analytics/dashboard`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
+
       if (response.ok) {
         const data = await response.json();
         setStats(data);
+      } else {
+        console.error('Failed to fetch dashboard stats:', response.statusText);
       }
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
+    } finally {
+      setLoading(false);
     }
   };
+
+  // Show loading while auth is initializing
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  // Show loading while fetching data
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-lg text-gray-600">Loading dashboard...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

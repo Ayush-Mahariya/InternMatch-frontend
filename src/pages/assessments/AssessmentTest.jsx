@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, ChevronLeft, ChevronRight, Flag, X, CheckCircle, AlertTriangle, Menu, Bookmark } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/ui/Button';
 
 const AssessmentTest = ({ assessment, onComplete, onClose }) => {
@@ -14,6 +15,7 @@ const AssessmentTest = ({ assessment, onComplete, onClose }) => {
   const [visitedQuestions, setVisitedQuestions] = useState(new Set([0]));
   const [markedForReview, setMarkedForReview] = useState(new Set());
 
+  const { token } = useAuth();
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
   // Timer effect
@@ -85,7 +87,9 @@ const AssessmentTest = ({ assessment, onComplete, onClose }) => {
     setSubmitted(true);
     
     try {
-      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token available');
+      }
       
       // Create answers object mapping questionIndex to selected answer
       const answersToSubmit = {};

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Clock, FileText, Award, Users, Target, CheckCircle, AlertTriangle, BookOpen, TrendingUp, Star } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/ui/Button';
 import AssessmentTest from './AssessmentTest';
 
@@ -8,13 +9,17 @@ const AssessmentModal = ({ assessment, onClose }) => {
   const [testResults, setTestResults] = useState(null);
   const [assessmentData, setAssessmentData] = useState(null);
   const [loading, setLoading] = useState(false);
-
+  
+  const { token } = useAuth();
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
   const handleStartTest = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please sign in to take the assessment');
+        return;
+      }
       
       // Call the new /start endpoint to get random questions
       const response = await fetch(`${API_BASE_URL}/api/assessments/${assessment._id}/start`, {
